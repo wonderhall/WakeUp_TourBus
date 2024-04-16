@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SkyboxBlender_BlendedSkybox
+  m_Shader: {fileID: 4800000, guid: 386398fdf2fb5cb428f87f50d86da644, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BackTex_1:
+        m_Texture: {fileID: 2800000, guid: 1388887dcb7edd24e98ac3e094b52d6c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BackTex_2:
+        m_Texture: {fileID: 2800000, guid: e5cdacf0e2daffb438064bec4e8a6bff, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DownTex_1:
+        m_Texture: {fileID: 2800000, guid: 9b58b3a1a4a87bb4d91d21971e5836eb, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DownTex_2:
+        m_Texture: {fileID: 2800000, guid: 80ecfe66a2c5a16409b81bdf3e7b88ae, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FrontTex_1:
+        m_Texture: {fileID: 2800000, guid: dd647b3cbcac3d2448ca0e32ce6677ec, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FrontTex_2:
+        m_Texture: {fileID: 2800000, guid: a665aac374256c34482c86d3702993db, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LeftTex_1:
+        m_Texture: {fileID: 2800000, guid: 6b72b9e8f7bbc5942a924bfe4d357ca8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LeftTex_2:
+        m_Texture: {fileID: 2800000, guid: 98ca2c0057e8db048aa00e1aa6982eb4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RightTex_1:
+        m_Texture: {fileID: 2800000, guid: ee840f924324dde4db8ca233711f2929, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RightTex_2:
+        m_Texture: {fileID: 2800000, guid: 6bbd42ac05eff7e48b960010a0adf8b7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _UpTex_1:
+        m_Texture: {fileID: 2800000, guid: 615b8e2a5239e284da4e36a72e44ea31, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _UpTex_2:
+        m_Texture: {fileID: 2800000, guid: 90e70a5b9a947894b9c781387173e47f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Blend: 0
+    - _BlendMode: 5
+    - _Exposure: 0.6
+    - _InvertColors: 0
+    - _Rotation: 0
+    m_Colors:
+    - _Tint: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
