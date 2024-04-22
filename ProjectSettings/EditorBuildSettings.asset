@@ -5,30 +5,33 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
     path: Assets/MetaGate_C15/Scenes/Sc_Login.unity
     guid: aa2e0576e3db72449942752ecf58a500
-  - enabled: 0
+  - enabled: 1
     path: Assets/MetaGate_C15/Scenes/Ss_YouthCenter.unity
     guid: 8dd446efcba8e054a95b2d2329b97951
-  - enabled: 0
+  - enabled: 1
     path: Assets/MetaGate_C15/Scenes/Ss_Sc01.unity
     guid: 707f4834ff3a6dd41874bda5c442cdf4
-  - enabled: 0
+  - enabled: 1
     path: Assets/MetaGate_C15/Scenes/Ss_Sc02.unity
     guid: 822523f5fc003c0468ae3a840d40ae01
-  - enabled: 0
+  - enabled: 1
     path: Assets/MetaGate_C15/Scenes/Ss_Sc03.unity
     guid: 110e950a5e42b7b479c703a88f460667
-  - enabled: 0
+  - enabled: 1
     path: Assets/MetaGate_C15/Scenes/Ss_Sc04.unity
     guid: 2c07d30a726934547bf43182cef0695c
-  - enabled: 0
+  - enabled: 1
     path: Assets/MetaGate_C15/Scenes/vatican.unity
     guid: 271bbae8533ced94886ce513ab92fa15
   - enabled: 1
     path: Assets/MetaGate_C15/Scenes/testScenes/Sc_t1.unity
     guid: 2741f03b78dbe5044be650ce4b61760d
+  - enabled: 0
+    path: Assets/Scenes/test1.unity
+    guid: b32b61cef0ddce142b22a40a7088517f
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 904a1afed647c194c8bb987c99fd85bd, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: d449bd2f960e74747b7847b1dde146a3, type: 2}

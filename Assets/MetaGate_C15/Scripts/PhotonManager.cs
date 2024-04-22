@@ -4,7 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
-
+using UnityEngine.SceneManagement;
 
 public class PhotonManager : MonoBehaviourPunCallbacks
 {
@@ -26,12 +26,11 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
+        roomName = SceneManager.GetActiveScene().name;
         playerInfo = GetComponent<PlayerInfo>();
         if (IsOffLineMode)
         {
-#if ForAndroid 
-            GameObject.Find("Player").transform.tag = "Player";
-#endif
+
             StartCoroutine(Disconnect());
         }
         else
@@ -59,7 +58,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("connected to Master!");
-        Debug.Log($"PhotonNetwork.inLobby = {PhotonNetwork.InLobby}");
+        playerInfo.IsJoindMasterServer = true;
         if (IsIntoRoom)//룸에 입장하는 체크
             PhotonNetwork.JoinLobby(); // 로비 입장
     }
@@ -142,5 +141,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             yield return null;
         }
         PhotonNetwork.OfflineMode = true;
+        playerInfo.IsJoindMasterServer = false;
+
     }
 }

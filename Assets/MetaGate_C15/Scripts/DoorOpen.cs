@@ -13,7 +13,7 @@ public class DoorOpen : MonoBehaviourPunCallbacks
     private bool isActive;
 
 
-    private new Renderer renderer ;
+    private new Renderer renderer;
     public float gradientTime = 2;
     [Header("temp")]
     private float currentAlpha;
@@ -38,28 +38,31 @@ public class DoorOpen : MonoBehaviourPunCallbacks
         if (other.tag == "Player")//안에 들어온 오브젝트의 태그가 "Player"라면
         {
             Debug.Log(other);
-            isActive = true; //도어를 활성화해서 이 문에 연결된  "OnLeftRoom()"만 실행한다
-            if (PN.OfflineMode == false && IsBreakNet == false)//온라인 룸에서 온라인 룸으로 실행
+            if (isActive == false)
             {
-                Debug.Log("온라인 룸에서 온라인 룸으로 실행");
-                StartCoroutine(ScreenFade(0, 1));
-                //PV = other.GetComponent<PhotonView>();
-                //if (PV.IsMine) StartCoroutine(ScreenFade(0, 1));
+                isActive = true; //도어를 활성화해서 이 문에 연결된  "OnLeftRoom()"만 실행한다
+                if (PN.OfflineMode == false && IsBreakNet == false)//온라인 룸에서 온라인 룸으로 실행
+                {
+                    Debug.Log("온라인 룸에서 온라인 룸으로 실행");
+                    StartCoroutine(ScreenFade(0, 1));
+                }
 
+                else //오프라인 룸에서  오프라인 룸으로 실행
+                {
+                    Debug.Log("오프라인 룸에서  오프라인 룸으로 실행");
+                    StartCoroutine(loadSc(SceneName));
+                    StartCoroutine(ScreenFade(0, 1));
+                }
             }
 
-            else //오프라인 룸에서  오프라인 룸으로 실행
-            {
-                Debug.Log("오프라인 룸에서  오프라인 룸으로 실행");
-                StartCoroutine(loadSc(SceneName));
-                StartCoroutine(ScreenFade(0, 1));
-            }
         }
 #endif
 #if ForVR
         if (other.tag == "Player" || other.tag == "MainCamera")//안에 들어온 오브젝트의 태그가 "Player"라면
         {
             Debug.Log(other);
+            if (isActive == false)
+            {
             isActive = true; //도어를 활성화해서 이 문에 연결된  "OnLeftRoom()"만 실행한다
             if (PN.OfflineMode == false && IsBreakNet == false)//온라인 룸에서 온라인 룸으로 실행
             {
@@ -75,6 +78,7 @@ public class DoorOpen : MonoBehaviourPunCallbacks
                 Debug.Log("오프라인 룸에서  오프라인 룸으로 실행");
                 StartCoroutine(loadSc(SceneName));
                 StartCoroutine(ScreenFade(0, 1));
+            }
             }
         }
 
@@ -185,7 +189,7 @@ public class DoorOpen : MonoBehaviourPunCallbacks
         }
         yield return new WaitForSeconds(1);
         IsDone = true;
-        if (isChangingSc == false && !IsBreakNet && PN.OfflineMode==false) //씬이 변경중이 아니라면
+        if (isChangingSc == false && !IsBreakNet && PN.OfflineMode == false) //씬이 변경중이 아니라면
         { Debug.Log("방떠남 코루틴 실행"); StartCoroutine(Leave()); }
 
     }

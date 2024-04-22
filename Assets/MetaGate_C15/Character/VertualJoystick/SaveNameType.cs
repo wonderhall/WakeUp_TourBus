@@ -34,28 +34,30 @@ public class SaveNameType : MonoBehaviour
     public GameObject[] handPrefabs;
     public TouchScreenKeyboard m_keyboard;
 
-    private PlayerInfo userInfo;
+    private PlayerInfo playInfo;
     private TouchScreenKeyboard keyboard;
     private void Awake()
     {
-        userInfo = GetComponent<PlayerInfo>();
+        playInfo = GetComponent<PlayerInfo>();
 #if ForAndroid
         Debug.Log("에디터_윈도우");
         deviceType[0].SetActive(true);
         deviceType[1].SetActive(false);
+        inputField = FindObjectOfType<InputField>(); //인풋필드 찾기.
         StartCoroutine(imgFade(1, 0, fadeInColor, false));
         return;
 #endif
 #if ForVR
         deviceType[0].SetActive(false);
         deviceType[1].SetActive(true);
+        inputField = FindObjectOfType<InputField>(); //인풋필드 찾기.
+
 #endif
     }
     private void Start()
     {
 
 
-        inputField = FindObjectOfType<InputField>(); //인풋필드 찾기.
 
         //m_keyboard = TouchScreenKeyboard.Open(inputField.text, TouchScreenKeyboardType.Default, false, false, false);
 
@@ -70,30 +72,32 @@ public class SaveNameType : MonoBehaviour
 
     public void EnterRoom()// 플레이프리팹에 정보 저장후 방입장
     {
-        //성별 저장
-        if (isFemale)
-            UserInfo.chType = 1;
-        else
-            UserInfo.chType = 0;
-        //이름저장
-        if (nameText.Length > 0)
-            UserInfo.userName = nameText;
-        else
-            UserInfo.userName = "이름없슴2";
+        if (playInfo.IsJoindMasterServer)
+        {
+            //성별 저장
+            if (isFemale)
+                UserInfo.chType = 1;
+            else
+                UserInfo.chType = 0;
+            //이름저장
+            if (nameText.Length > 0)
+                UserInfo.userName = nameText;
+            else
+                UserInfo.userName = "이름없슴2";
 
-
-#if ForAndroid
-        Debug.Log("안드로이드용");
-        StartCoroutine(imgFade(0, 1, fadeOutColor, true));
-        StartCoroutine(loadSc(LoadSceneName));
-        return;
-#endif
-#if ForVR
-        Debug.Log("VR용");
-        StartCoroutine(ScreenFade(0, 1, fadeOutColor));
-        StartCoroutine(loadSc(LoadSceneName));
-
-#endif
+            if (deviceType[0].activeSelf)//안드로이드일경우{
+            {
+                Debug.Log("안드로이드용");
+                StartCoroutine(imgFade(0, 1, fadeOutColor, true));
+                StartCoroutine(loadSc(LoadSceneName));
+            }
+            else//vr일경우
+            {
+                Debug.Log("VR용");
+                StartCoroutine(ScreenFade(0, 1, fadeOutColor));
+                StartCoroutine(loadSc(LoadSceneName));
+            }
+        }
 
     }
 
@@ -105,19 +109,26 @@ public class SaveNameType : MonoBehaviour
         {
             nameText = inputField.text;
         }
-        if (inputField.isFocused)//키보드 활성화 되었을때 컨트롤러 핸드 하이드
+
+        if (deviceType[1].activeSelf)//vr일경우만 체크
         {
-            foreach (var item in handPrefabs)
+            if (inputField.isFocused)//키보드 활성화 되었을때 컨트롤러 핸드 하이드
             {
-                item.SetActive(false);
+                foreach (var item in handPrefabs)
+                {
+                    item.SetActive(false);
+                }
             }
-        }else
-        {
-            foreach (var item in handPrefabs)
+            else
             {
-                item.SetActive(true);
+                foreach (var item in handPrefabs)
+                {
+                    item.SetActive(true);
+                }
             }
+
         }
+
     }
 
     IEnumerator loadSc(string scName) //씬 에이씽크로드
@@ -139,7 +150,7 @@ public class SaveNameType : MonoBehaviour
     }
 
 
-#region 스크린페이드
+    #region 스크린페이드
     public IEnumerator imgFade(float start, float end, Color FadeColor, bool isEndEvent)
     {
 
@@ -187,7 +198,7 @@ public class SaveNameType : MonoBehaviour
         color.a = Mathf.Max(currentAlpha, nowFadeAlpha);
         renderer.material.color = color;
     }
-#endregion
+    #endregion
 
 
 

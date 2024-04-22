@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(CharacterController))]
-public class GaitLocomotion : MonoBehaviour
+public class GaitLocomotion2 : MonoBehaviour
 {
     #region nested classes
 
