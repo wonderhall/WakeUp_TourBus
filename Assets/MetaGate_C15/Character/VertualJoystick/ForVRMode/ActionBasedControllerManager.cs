@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine.InputSystem;
 
+
 namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 {
     /// <summary>
@@ -80,10 +81,13 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         [SerializeField]
         [Tooltip("If true, continuous movement will be enabled. If false, teleport will enabled.")]
         bool m_SmoothMotionEnabled;
-        
+
         [SerializeField]
         [Tooltip("If true, continuous turn will be enabled. If false, snap turn will be enabled. Note: If smooth motion is enabled and enable strafe is enabled on the continuous move provider, turn will be overriden in favor of strafe.")]
         bool m_SmoothTurnEnabled;
+
+        [Tooltip("걷기인식 모듈")]
+        public GaitLocomotion2 gaitLocomotion;
 
         public bool smoothMotionEnabled
         {
@@ -166,6 +170,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
         void StartTeleport(InputAction.CallbackContext obj)
         {
+            gaitLocomotion.gettingInputButton = true;
             m_Teleporting = true;
             if (m_TeleportInteractor != null)
                 m_TeleportInteractor.gameObject.SetActive(true);
@@ -180,8 +185,13 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             // the teleport interactor has a chance to complete the teleport if needed.
             // OnAfterInteractionEvents will handle deactivating its GameObject.
             RayInteractorUpdate();
+            StartCoroutine(GettingInputButtonToFalse());
         }
-
+        IEnumerator GettingInputButtonToFalse()
+        {
+            yield return new WaitForSeconds(0.2f);
+            gaitLocomotion.gettingInputButton = false;
+        }
         void DirectHoverEntered(HoverEnterEventArgs args)
         {
             m_DirectHover = true;
@@ -232,7 +242,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             // Enable direct selection
             if (m_DirectInteractor != null)
                 m_DirectInteractor.gameObject.SetActive(true);
-            
+
             // Re-enable the locomotion and turn actions
             UpdateLocomotionActions();
             UpdateTurnActions();
@@ -267,7 +277,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         {
             TeardownInteractorEvents();
         }
-        
+
         IEnumerator OnAfterInteractionEvents()
         {
             // Avoid comparison to null each frame since that operation is somewhat expensive
@@ -343,6 +353,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             var action = GetInputAction(actionReference);
             if (action != null && !action.enabled)
                 action.Enable();
+
         }
 
         static void DisableAction(InputActionReference actionReference)

@@ -140,9 +140,9 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
                     break;
 
                 case MovementDirection.HandRelative:
-                    if (m_LeftControllerTransform != null)
+                    if (m_LeftControllerTransform != null) 
                         m_LeftMovementPose = m_LeftControllerTransform.GetWorldPose();
-
+   
                     break;
 
                 default:
@@ -173,6 +173,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             // Combine the two poses into the forward source based on the magnitude of input
             var leftHandValue = leftHandMoveAction.action?.ReadValue<Vector2>() ?? Vector2.zero;
             var rightHandValue = rightHandMoveAction.action?.ReadValue<Vector2>() ?? Vector2.zero;
+
 
             var totalSqrMagnitude = leftHandValue.sqrMagnitude + rightHandValue.sqrMagnitude;
             var leftHandBlend = 0.5f;

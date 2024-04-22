@@ -53,8 +53,8 @@ public class PlayerInfo : MonoBehaviour
     public Sprite[] ChImages;
     public GameObject emoTextBox;
 
-    [Header("이벤트시스템 0은 vr 1은 안드로이드")]
-    public GameObject[] eventSystems = new GameObject[2];
+    //[Header("이벤트시스템 0은 vr 1은 안드로이드")]
+    //public GameObject[] eventSystems = new GameObject[2];
 
     // Start is called before the first frame update
     //디버깅
@@ -87,22 +87,22 @@ public class PlayerInfo : MonoBehaviour
         if (UserInfo.chType == 0) { ChImage.sprite = ChImages[0]; } //0은남자1은여자 
         else { ChImage.sprite = ChImages[1]; }//여자이면 ui 얼굴 여자로 교체
         savedSprite = ChImage.sprite;
-        if (GameObject.FindAnyObjectByType<EventSystem>())//이벤트 시스템 중복 방지
-        {
-            Destroy(GameObject.FindAnyObjectByType<EventSystem>().gameObject);
-        }
-        Instantiate(eventSystems[1]);
+        //if (GameObject.FindAnyObjectByType<EventSystem>())//이벤트 시스템 중복 방지
+        //{
+        //    Destroy(GameObject.FindAnyObjectByType<EventSystem>().gameObject);
+        //}
+        //Instantiate(eventSystems[1]);
         this.transform.GetChild(0).gameObject.SetActive(false);
         this.transform.GetChild(1).gameObject.SetActive(true);
         GameObject.Find("Player").transform.tag = "Player";
 #endif
 #if ForVR
         _dvType = deviceType.vr;
-        if (GameObject.FindAnyObjectByType<EventSystem>())//이벤트 시스템 중복 방지
-        {
-            Destroy(GameObject.FindAnyObjectByType<EventSystem>().gameObject);
-        }
-        Instantiate(eventSystems[0]);
+        //if (GameObject.FindAnyObjectByType<EventSystem>())//이벤트 시스템 중복 방지
+        //{
+        //    Destroy(GameObject.FindAnyObjectByType<EventSystem>().gameObject);
+        //}
+        //Instantiate(eventSystems[0]);
         this.transform.GetChild(0).gameObject.SetActive(true);
         this.transform.GetChild(1).gameObject.SetActive(false);
 

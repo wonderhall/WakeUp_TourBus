@@ -1,8 +1,0 @@
-The asset Path Creator by Sebastian Lague is free and open source.
-Additionally, the asset is governed by the Asset Store EULA;
-
-
-The following Sketchfab assets are included using the CC Attribution license:
-
- - Greek Cartographer, by garrett_mooney (@garrett.mooney)
- - Environment - A 3D model collection, by Vladimir Demidenko (@wladdemid88)
