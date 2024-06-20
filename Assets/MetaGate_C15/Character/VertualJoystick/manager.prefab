@@ -10684,7 +10684,6 @@ MonoBehaviour:
   m_totalSteps: 0
   m_stepDistance: 1
   gettingInputButton: 0
-  text: {fileID: 0}
 --- !u!1 &4256143951466568252
 GameObject:
   m_ObjectHideFlags: 0
@@ -17217,7 +17216,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7729272025793101970
 Transform:
   m_ObjectHideFlags: 0
