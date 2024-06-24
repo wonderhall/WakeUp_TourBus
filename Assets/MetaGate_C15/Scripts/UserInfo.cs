@@ -7,6 +7,8 @@ public class UserInfo : MonoBehaviour
     public static string userName = "noName";
     public static int chType = 0;
     private static UserInfo _Instance;
+    public static bool UseWalkSimulation;
+    public static bool[] UnlockRoom = new bool[10];
     public static UserInfo Instancet
     {
         get

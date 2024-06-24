@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.unity.2d.sprite": "1.0.0",
     "com.unity.collab-proxy": "2.0.1",
     "com.unity.feature.development": "1.0.1",
     "com.unity.formats.fbx": "4.1.3",
@@ -17,7 +18,6 @@
     "com.unity.xr.interaction.toolkit": "2.2.0",
     "com.unity.xr.oculus": "3.2.3",
     "com.unity.xr.openxr": "1.6.0",
-    "com.unity.xr.openxr.picoxr": "file:C:/Users/DAXIB/Documents/working/PICO Unity OpenXR Integration SDK_120",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",

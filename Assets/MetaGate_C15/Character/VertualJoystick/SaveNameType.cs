@@ -13,7 +13,7 @@ public class SaveNameType : MonoBehaviour
     public string nameText;
     public bool isFemale;
     public GameObject[] deviceType = new GameObject[2];
-
+    public bool UseWalkSimulation;
 
     [Header("스크린페이드인자값")]
     public string LoadSceneName;
@@ -64,12 +64,16 @@ public class SaveNameType : MonoBehaviour
 
     }
 
+    
 
     public void IsFemale(bool isTrue)
     {
         isFemale = isTrue;
     }
-
+    public void ChangeWalkSimulation(bool isTrue)
+    {
+        UseWalkSimulation = isTrue;
+    }
     public void EnterRoom()// 플레이프리팹에 정보 저장후 방입장
     {
         if (playInfo.IsJoindMasterServer)
@@ -97,6 +101,7 @@ public class SaveNameType : MonoBehaviour
                 StartCoroutine(ScreenFade(0, 1, fadeOutColor));
                 StartCoroutine(loadSc(LoadSceneName));
             }
+            UserInfo.UseWalkSimulation = UseWalkSimulation;
         }
 
     }

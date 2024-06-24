@@ -52,7 +52,8 @@ public class PlayerInfo : MonoBehaviour
     public Image ChImage;
     public Sprite[] ChImages;
     public GameObject emoTextBox;
-
+    public bool[] RoomUnLock= new bool[6];
+    public GaitLocomotion2 WalkSimulation;
     //[Header("이벤트시스템 0은 vr 1은 안드로이드")]
     //public GameObject[] eventSystems = new GameObject[2];
 
@@ -116,6 +117,8 @@ public class PlayerInfo : MonoBehaviour
         deviceCheck();
         thePlayer = new GameObject("thePlayer");
         cam = Camera.main.transform;
+        if (_dvType == deviceType.vr && UserInfo.UseWalkSimulation == true) WalkSimulation.enabled=true;
+        else WalkSimulation.enabled = false;
     }
     void Start()
     {
