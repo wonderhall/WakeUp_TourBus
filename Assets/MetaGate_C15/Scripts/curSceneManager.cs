@@ -72,6 +72,8 @@ public class curSceneManager : MonoBehaviour
 
     private bool updatingColor;
 
+    public bool IsJumpNextScene;
+
     private void Awake()
     {
         currentTime = 0.0f;
@@ -104,7 +106,7 @@ public class curSceneManager : MonoBehaviour
         t += startSecond;
 
 
-        if (t >= endSc_sec && !isDoing && !IsDone)
+        if (t >= endSc_sec && !isDoing && !IsDone&& IsJumpNextScene)
         {
             Debug.Log("³¡");
             StartCoroutine(loadSc(SceneName));

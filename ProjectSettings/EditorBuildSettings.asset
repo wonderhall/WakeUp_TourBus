@@ -8,12 +8,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/MetaGate_C15/Scenes/Sc_Login.unity
     guid: aa2e0576e3db72449942752ecf58a500
-  - enabled: 0
-    path: Assets/MetaGate_C15/Scenes/Ss_YouthCenter.unity
-    guid: 8dd446efcba8e054a95b2d2329b97951
   - enabled: 1
     path: Assets/MetaGate_C15/Scenes/Ss_YouthCenter_In.unity
     guid: c6f1d31acd996f742b73fef04bacdbec
+  - enabled: 1
+    path: Assets/MetaGate_C15/Scenes/Ss_YouthCenter.unity
+    guid: 8dd446efcba8e054a95b2d2329b97951
   - enabled: 1
     path: Assets/MetaGate_C15/Scenes/Ss_Sc01.unity
     guid: 707f4834ff3a6dd41874bda5c442cdf4

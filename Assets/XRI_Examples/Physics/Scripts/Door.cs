@@ -278,7 +278,9 @@ namespace UnityEngine.XR.Content.Interaction
             p_manager = GameObject.FindAnyObjectByType<PhotonManager>();
             colliderForUserCheck = GetComponent<Collider>();
             Vol = FindAnyObjectByType<Volume>();
+#if ForVR
             colliderForUserCheck.enabled = false;
+#endif
             OpenLightVolume.SetActive(false);//문 뒤편 화이트
             UserInfo.UnlockRoom[0] = true;
             DoorLocked = !UserInfo.UnlockRoom[RoomIdx];
@@ -305,7 +307,7 @@ namespace UnityEngine.XR.Content.Interaction
 
             }
             ColorAdj.postExposure.overrideState = true;
-            #endregion <--
+#endregion <--
         }
 
         void Update()
@@ -460,7 +462,7 @@ namespace UnityEngine.XR.Content.Interaction
             }
 
         }
-        #region 스크린페이드
+#region 스크린페이드
         private IEnumerator ScreenFade(float start, float end)
         {
             float nowTime = 0.0f;
@@ -480,7 +482,7 @@ namespace UnityEngine.XR.Content.Interaction
             }
            
         }
-        #endregion
+#endregion
         private IEnumerator particleColorChange(ParticleSystem particle, Color color)
         {
             yield return new WaitForSeconds(1);

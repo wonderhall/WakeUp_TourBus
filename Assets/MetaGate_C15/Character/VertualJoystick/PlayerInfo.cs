@@ -83,6 +83,7 @@ public class PlayerInfo : MonoBehaviour
 #if ForAndroid
         _dvType = deviceType.android;
         if (!UseNetWork) emoUI.transform.parent.gameObject.SetActive(false);// 네트워크가 필요없을때 이모티콘 하이드
+        else emoUI.transform.parent.gameObject.SetActive(true);
 
         //유저싱글톤에  저장된 캐릭터타입
         if (UserInfo.chType == 0) { ChImage.sprite = ChImages[0]; } //0은남자1은여자 
