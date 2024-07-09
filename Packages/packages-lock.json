@@ -119,8 +119,8 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
-      "version": "1.8.14",
-      "depth": 1,
+      "version": "1.8.16",
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
@@ -391,12 +391,15 @@
       },
       "url": "https://packages.unity.com"
     },
-    "com.unity.xr.oculus": {
-      "version": "3.4.0",
+    "com.unity.xr.openxr": {
+      "version": "1.11.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.xr.management": "4.4.0"
+        "com.unity.xr.management": "4.4.0",
+        "com.unity.xr.legacyinputhelpers": "2.1.2",
+        "com.unity.inputsystem": "1.6.3",
+        "com.unity.xr.core-utils": "2.1.1"
       },
       "url": "https://packages.unity.com"
     },
