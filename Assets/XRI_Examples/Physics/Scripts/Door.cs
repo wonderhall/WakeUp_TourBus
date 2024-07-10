@@ -384,14 +384,14 @@ namespace UnityEngine.XR.Content.Interaction
                 if (PN.OfflineMode == false && IsBreakNet == false)//온라인 룸에서 온라인 룸으로 실행
                 {
                     Debug.Log("온라인 룸에서 온라인 룸으로 실행");
-                    StartCoroutine(ScreenFade(0.3f, 7f));
+                    StartCoroutine(ScreenFade(0.3f, 5f));
                 }
 
                 else //오프라인 룸에서  오프라인 룸으로 실행
                 {
                     Debug.Log("오프라인 룸에서  오프라인 룸으로 실행");
                     StartCoroutine(loadSc(SceneName));
-                    StartCoroutine(ScreenFade(0.3f, 7f));
+                    StartCoroutine(ScreenFade(0.3f, 5f));
                 }
             }
 
@@ -407,13 +407,13 @@ namespace UnityEngine.XR.Content.Interaction
                     if (PN.OfflineMode == false && IsBreakNet == false)//온라인 룸에서 온라인 룸으로 실행
                     {
                         Debug.Log(" 온라인 룸으로 실행");
-                        StartCoroutine(ScreenFade(0.3f, 7f));
+                        StartCoroutine(ScreenFade(0.3f, 5f));
                     }
 
                     else //오프라인 룸에서  오프라인 룸으로 실행
                     {
                         Debug.Log(" 오프라인 룸으로 실행");
-                        StartCoroutine(ScreenFade(0.3f, 7f));
+                        StartCoroutine(ScreenFade(0.3f, 5f));
                         StartCoroutine(loadSc(SceneName));
                     }
                 }

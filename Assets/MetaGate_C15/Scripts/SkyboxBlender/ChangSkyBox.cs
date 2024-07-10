@@ -18,9 +18,7 @@ public class ChangSkyBox : MonoBehaviour
     private float Sun_posY;
     private float Sun_rotX;
     private Quaternion lightRot;
-    public Camera cam;
-    private Vector3 scaleChange;
-    public float scaleChangeValue = 0.01f;
+    private Camera cam;
     private void OnEnable()
     {
         cam = Camera.main;
@@ -55,14 +53,26 @@ public class ChangSkyBox : MonoBehaviour
             nowTime += Time.deltaTime;
             Sun_posY = Mathf.Lerp(sunMesh.position.y, -6f, Mathf.Clamp01(nowTime / SunFallDownTime));
             sunMesh.position = new Vector3(sunMesh.position.x, Sun_posY, sunMesh.position.z);
-            scaleChange = new Vector3(scaleChangeValue, scaleChangeValue, scaleChangeValue);
-            sunMesh.localScale += scaleChange;
             sunMesh.transform.LookAt(cam.transform);
-            Debug.Log(Sun_posY);
-            if (Sun_posY < -5.3f)
-                break;
             yield return new WaitForEndOfFrame();
         }
     }
+    //private void SetAlpha()
+    //{
+    //    changeV = nowFadeAlpha;
+    //    skybox.SetFloat("_changeValue", changeV);
 
+    //    //RenderSettings.skybox = skyBox01;
+
+    //    //Color color = fadeColor;
+    //    //color.a = Mathf.Max(currentAlpha, nowFadeAlpha);
+    //    //isGradient = color.a > 0;
+    //    //if (gradientMaterial != null)
+    //    //{
+    //    //    gradientMaterial.color = color;
+    //    //    gradientMaterial.renderQueue = renderQueue;
+    //    //    gradientMeshRenderer.material = gradientMaterial;
+    //    //    gradientMeshRenderer.enabled = isGradient;
+    //    //}
+    //}
 }
