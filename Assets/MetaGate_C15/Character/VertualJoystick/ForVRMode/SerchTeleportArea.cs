@@ -1,14 +1,14 @@
 using UnityEngine;
-
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class SerchTeleportArea : MonoBehaviour
 {
-    UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.TeleportationArea ta;
+    TeleportationArea ta;
     private GameObject[] colList;
     // Start is called before the first frame update
     private void Awake()
     {
-        ta = this.GetComponent<UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.TeleportationArea>();
+        ta = this.GetComponent<TeleportationArea>();
         colList = GameObject.FindGameObjectsWithTag("teleportArea");
         foreach (var item in colList)
         {
