@@ -9,7 +9,7 @@ namespace UnityEngine.XR.Content.Interaction
     /// <summary>
     /// An interactable knob that follows the rotation of the interactor
     /// </summary>
-    public class XRKnob : UnityEngine.XR.Interaction.Toolkit.XRBaseInteractable
+    public class XRKnob : UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable
     {
         const float k_ModeSwitchDeadZone = 0.1f; // Prevents rapid switching between the different rotation tracking modes
 
@@ -120,7 +120,7 @@ namespace UnityEngine.XR.Content.Interaction
         [Tooltip("Events to trigger when the knob is rotated")]
         ValueChangeEvent m_OnValueChange = new ValueChangeEvent();
 
-        UnityEngine.XR.Interaction.Toolkit.IXRSelectInteractor m_Interactor;
+        UnityEngine.XR.Interaction.Toolkit.Interactors.IXRSelectInteractor m_Interactor;
 
         bool m_PositionDriven = false;
         bool m_UpVectorDriven = false;
