@@ -7,11 +7,9 @@ using Photon.Pun;
 using PN = Photon.Pun.PhotonNetwork;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using Unity.VisualScripting;
+using System;
 
-using Photon.Realtime;
-
-//using UnityEngine.XR.Interaction.Toolkit.Interactors;
-//using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 namespace UnityEngine.XR.Content.Interaction
 {
@@ -218,7 +216,7 @@ namespace UnityEngine.XR.Content.Interaction
 
         [Header("네트워크 및 이벤트설정")]
         public string SceneName;
-        private bool IsDone;
+        public bool IsDone;
         public bool IsBreakNet;
         private bool isActive;
         private Volume Vol;
@@ -246,6 +244,8 @@ namespace UnityEngine.XR.Content.Interaction
 
         private bool isChangingSc = false;//씬 변경중인지 체크
 
+        public XRKnobBackToIntValue m_XRKnobBackToIntValue;
+
         /// <summary>
         /// Events to fire when the door is locked.
         /// </summary>
@@ -256,7 +256,7 @@ namespace UnityEngine.XR.Content.Interaction
         /// </summary>
         public UnityEvent onUnlock => m_OnUnlock;
 
-
+        bool ScReady = false;
 
         void Start()
         {
@@ -269,7 +269,6 @@ namespace UnityEngine.XR.Content.Interaction
             m_ClosedDoorLimits.min = 0.0f;
             m_ClosedDoorLimits.max = 0.0f;
             m_DoorJoint.limits = m_ClosedDoorLimits;
-            //m_KeyKnob.SetActive(false);
             m_Closed = true;
 
             #region 네트워크 및 이벤트-->
@@ -279,12 +278,12 @@ namespace UnityEngine.XR.Content.Interaction
             colliderForUserCheck = GetComponent<Collider>();
             Vol = FindAnyObjectByType<Volume>();
 #if ForVR
-            colliderForUserCheck.enabled = false;
+            colliderForUserCheck.enabled = false;//씬전환 컬리전
 #endif
             OpenLightVolume.SetActive(false);//문 뒤편 화이트
             UserInfo.UnlockRoom[0] = true;
             DoorLocked = !UserInfo.UnlockRoom[RoomIdx];
-            
+
             psArray = FocusEffect.transform.GetComponentsInChildren<ParticleSystem>();
 
             if (!DoorLocked)//문이 열려있으면
@@ -307,7 +306,7 @@ namespace UnityEngine.XR.Content.Interaction
 
             }
             ColorAdj.postExposure.overrideState = true;
-#endregion <--
+            #endregion <--
         }
 
         void Update()
@@ -324,7 +323,6 @@ namespace UnityEngine.XR.Content.Interaction
                     m_Closed = true;
                 }
             }
-
         }
 
 
@@ -335,12 +333,18 @@ namespace UnityEngine.XR.Content.Interaction
             {
                 m_DoorPuller.connectedBody = args.interactorObject.GetAttachTransform(args.interactableObject);
                 m_DoorPuller.enabled = true;
-                colliderForUserCheck.enabled = true;//방이동을 위해 유저와 충돌할 컬리전 킴.
+                Invoke("CheckCollider", 1.5f);//방이동을 위해 유저와 충돌할 1초후 컬리전 킴.
+                //colliderForUserCheck.enabled = true;//방이동을 위해 유저와 충돌할 컬리전 킴.
                 OpenLightVolume.SetActive(true);//문 뒤편 화이트
                 FocusEffect.SetActive(false);
                 doorUnLockCheck.SetRoomUnLock();
                 Debug.Log("밀기시작");
             }
+        }
+
+        void CheckCollider()
+        {
+            colliderForUserCheck.enabled = true;//방이동을 위해 유저와 충돌할 컬리전 킴.
         }
 
         public void EndDoorPulling()
@@ -400,26 +404,26 @@ namespace UnityEngine.XR.Content.Interaction
 #if ForVR
             if (other.tag == "Player" || other.tag == "MainCamera")//안에 들어온 오브젝트의 태그가 "Player"라면
             {
-                Debug.Log(other);
                 if (isActive == false)
                 {
                     isActive = true; //도어를 활성화해서 이 문에 연결된  "OnLeftRoom()"만 실행한다
-                    if (PN.OfflineMode == false && IsBreakNet == false)//온라인 룸에서 온라인 룸으로 실행
-                    {
-                        Debug.Log(" 온라인 룸으로 실행");
-                        StartCoroutine(ScreenFade(0.3f, 5f));
-                    }
-
-                    else //오프라인 룸에서  오프라인 룸으로 실행
-                    {
-                        Debug.Log(" 오프라인 룸으로 실행");
-                        StartCoroutine(ScreenFade(0.3f, 5f));
-                        StartCoroutine(loadSc(SceneName));
-                    }
+                    StartCoroutine(loadSc(SceneName));
                 }
             }
 #endif
 
+
+        }
+
+        bool ISFadine = false;
+        public void StartFadeIn()
+        {
+            if (!ISFadine&& !DoorLocked)
+            {
+                ISFadine = true;
+                m_XRKnobBackToIntValue.isChanging = true;
+                StartCoroutine(ScreenFade(0.3f, 5f));
+            }
         }
 
 
@@ -431,14 +435,14 @@ namespace UnityEngine.XR.Content.Interaction
             asyncOperation.allowSceneActivation = false;
             while (!asyncOperation.isDone)
             {
-                Debug.Log($"{scName} 에이싱크 대기중");
+
+                //Debug.Log($"{scName} 에이싱크 대기중");
                 if (IsDone)
                 {
                     asyncOperation.allowSceneActivation = true;
                 }
                 yield return null;
             }
-
         }
 
         public IEnumerator Leave()
@@ -449,20 +453,21 @@ namespace UnityEngine.XR.Content.Interaction
             p_manager.roomName = SceneName;
             PhotonNetwork.LeaveRoom();
             while (PhotonNetwork.InRoom && IsDone) ;
+            IsDone = true;
             yield return null;
             // load previpous scene
         }
 
-        public override void OnLeftRoom()
-        {
-            if (isActive && !IsBreakNet)
-            {
-                Debug.Log($"{SceneName} 씬 로드");
-                SceneManager.LoadScene(SceneName);
-            }
+        //public override void OnLeftRoom()
+        //{
+        //    if (isActive && !IsBreakNet)
+        //    {
+        //        Debug.Log($"{SceneName} 씬 로드");
+        //        SceneManager.LoadScene(SceneName);
+        //    }
 
-        }
-#region 스크린페이드
+        //}
+        #region 스크린페이드
         private IEnumerator ScreenFade(float start, float end)
         {
             float nowTime = 0.0f;
@@ -473,16 +478,16 @@ namespace UnityEngine.XR.Content.Interaction
                 Debug.Log($"현재 포스트이펙트 컬러노출값은 '{ColorAdj.postExposure.value}' 이다");
                 yield return new WaitForEndOfFrame();
             }
-            yield return new WaitForSeconds(1);
-            IsDone = true;
-            if (isChangingSc == false && !IsBreakNet && PN.OfflineMode == false) //���� �������� �ƴ϶��
+            yield return null;
+            //IsDone = true;
+            if (isChangingSc == false /*&& !IsBreakNet && PN.OfflineMode == false*/) //���� �������� �ƴ϶��
             {
-                Debug.Log("방떠남 코루틴 실행"); 
+                Debug.Log("방떠남 코루틴 실행");
                 StartCoroutine(Leave());
             }
-           
+
         }
-#endregion
+        #endregion
         private IEnumerator particleColorChange(ParticleSystem particle, Color color)
         {
             yield return new WaitForSeconds(1);

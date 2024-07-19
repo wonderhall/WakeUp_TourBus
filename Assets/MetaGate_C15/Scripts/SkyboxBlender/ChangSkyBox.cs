@@ -19,6 +19,8 @@ public class ChangSkyBox : MonoBehaviour
     private float Sun_rotX;
     private Quaternion lightRot;
     private Camera cam;
+    private Vector3 scaleChange;
+    public float scaleChangeValue = 0.01f;
     private void OnEnable()
     {
         cam = Camera.main;
@@ -51,9 +53,13 @@ public class ChangSkyBox : MonoBehaviour
         while (nowTime < SunFallDownTime)
         {
             nowTime += Time.deltaTime;
-            Sun_posY = Mathf.Lerp(sunMesh.position.y, -6f, Mathf.Clamp01(nowTime / SunFallDownTime));
+            Sun_posY = Mathf.Lerp(sunMesh.position.y, -6.5f, Mathf.Clamp01(nowTime / SunFallDownTime));
             sunMesh.position = new Vector3(sunMesh.position.x, Sun_posY, sunMesh.position.z);
+            scaleChange = new Vector3(scaleChangeValue, scaleChangeValue, scaleChangeValue);
+            sunMesh.localScale += scaleChange;
             sunMesh.transform.LookAt(cam.transform);
+            if (Sun_posY < -5.7f)
+                break;
             yield return new WaitForEndOfFrame();
         }
     }

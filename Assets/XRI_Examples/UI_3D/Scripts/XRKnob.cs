@@ -1,15 +1,13 @@
 using System;
 using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
-//using UnityEngine.XR.Interaction.Toolkit.Interactors;
-//using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 namespace UnityEngine.XR.Content.Interaction
 {
     /// <summary>
     /// An interactable knob that follows the rotation of the interactor
     /// </summary>
-    public class XRKnob : UnityEngine.XR.Interaction.Toolkit.XRBaseInteractable
+    public class XRKnob : XRBaseInteractable
     {
         const float k_ModeSwitchDeadZone = 0.1f; // Prevents rapid switching between the different rotation tracking modes
 
@@ -92,6 +90,7 @@ namespace UnityEngine.XR.Content.Interaction
         [Range(0.0f, 1.0f)]
         float m_Value = 0.5f;
 
+
         [SerializeField]
         [Tooltip("Whether this knob's rotation should be clamped by the angle limits")]
         bool m_ClampedMotion = true;
@@ -120,7 +119,7 @@ namespace UnityEngine.XR.Content.Interaction
         [Tooltip("Events to trigger when the knob is rotated")]
         ValueChangeEvent m_OnValueChange = new ValueChangeEvent();
 
-        UnityEngine.XR.Interaction.Toolkit.IXRSelectInteractor m_Interactor;
+        IXRSelectInteractor m_Interactor;
 
         bool m_PositionDriven = false;
         bool m_UpVectorDriven = false;
@@ -343,7 +342,7 @@ namespace UnityEngine.XR.Content.Interaction
                 m_Handle.localEulerAngles = new Vector3(0.0f, angle, 0.0f);
         }
 
-        void SetValue(float value)
+       public void SetValue(float value)
         {
             if (m_ClampedMotion)
                 value = Mathf.Clamp01(value);

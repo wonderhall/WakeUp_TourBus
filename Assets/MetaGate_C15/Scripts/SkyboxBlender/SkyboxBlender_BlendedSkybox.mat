@@ -70,7 +70,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Blend: 0
+    - _Blend: 0.67559296
     - _BlendMode: 5
     - _Exposure: 0.6
     - _InvertColors: 0
