@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -53,7 +53,7 @@ public class curSceneManager : MonoBehaviour
     public List<EventInfo> list;
     public float speed = 1;
     public int startSecond = 0;
-    [Header("Á¾·á¼³Á¤")]
+    [Header("ì¢…ë£Œì„¤ì •")]
     public int endSc_sec;
     public string SceneName;
     public float EndGradientTime;
@@ -108,7 +108,7 @@ public class curSceneManager : MonoBehaviour
 
         if (t >= endSc_sec && !isDoing && !IsDone&& IsJumpNextScene)
         {
-            Debug.Log("³¡");
+            Debug.Log("ë");
             StartCoroutine(loadSc(SceneName));
             StartCoroutine(ScreenFade(0, 1));
         }
@@ -151,10 +151,10 @@ public class curSceneManager : MonoBehaviour
 
     }
 
-    //ÆäÀÌµåÀÎ¾Æ¿ô
+    //í˜ì´ë“œì¸ì•„ì›ƒ
     public IEnumerator ScreenFade(float start, float end, EventInfo item)
     {
-        Debug.Log("¿©±â");
+        Debug.Log("ì—¬ê¸°");
         updatingColor = true;
         if (item.isStart && item.isDone) yield break;
         Color col = item.renderer.material.color;
@@ -185,7 +185,7 @@ public class curSceneManager : MonoBehaviour
 
 
 
-    //Á¾·á È­¸é ¾îµÎ¿öÁü
+    //ì¢…ë£Œ í™”ë©´ ì–´ë‘ì›Œì§
     IEnumerator loadSc(string scName)
     {
         yield return null;

@@ -17,6 +17,7 @@ namespace VolumetricLights {
 
     [ExecuteAlways, RequireComponent(typeof(Light)), AddComponentMenu("Effects/Volumetric Light", 1000)]
     [HelpURL("https://kronnect.com/guides/volumetric-lights-2-urp-volumetric-light-parameters/")]
+    [DefaultExecutionOrder(100)]
     public partial class VolumetricLight : MonoBehaviour {
 
         // Events
@@ -26,6 +27,8 @@ namespace VolumetricLights {
         public bool profileSync = true;
         public bool useCustomBounds;
         public Bounds bounds;
+        [Tooltip("In enabled, bounds coordinates are relative to the light position")]
+        public bool boundsInLocalSpace;
         public VolumetricLightProfile profile;
         public float customRange = 1f;
         [Tooltip("Used for point light occlusion orientation and checking camera distance when autoToggle options are enabled. If not assigned, it will try to use the main camera.")]
@@ -44,6 +47,7 @@ namespace VolumetricLights {
         [NonSerialized]
         public MeshRenderer meshRenderer;
         Material fogMat, fogMatLight, fogMatInvisible;
+        Shader fogMatShader, fogMatInvisibleShader;
         Vector4 windDirectionAcum;
         bool requireUpdateMaterial;
         List<string> keywords;
@@ -53,23 +57,16 @@ namespace VolumetricLights {
         [NonSerialized]
         public static Transform mainCamera;
         float lastDistanceCheckTime;
-        bool wasInRange;
+
+        enum Tribool {
+            Unknown = 0,
+            True = 1,
+            False = -1
+        }
+        Tribool wasInRange = Tribool.Unknown;
 
 
         public static List<VolumetricLight> volumetricLights = new List<VolumetricLight>();
-
-        /// <summary>
-        /// This property will return an instanced copy of the profile and use it for this volumetric light from now on. Works similarly to Unity's material vs sharedMaterial.
-        /// </summary>
-        [Obsolete("Settings property is now deprecated. Settings are now part of the Volumetric Light component itself, for example: VolumetricLight.density instead of VolumetricLight.settings.density.")]
-        public VolumetricLightProfile settings {
-            get {
-                return profile;
-            }
-            set {
-                Debug.Log("Changing values through settings is deprecated. If you want to get or set the profile for this light, use the profile property. Or simply set the properties now directly to the volumetric light component. For example: VolumetricLight.density = xxx.");
-            }
-        }
 
 
         void OnEnable() {
@@ -86,6 +83,9 @@ namespace VolumetricLights {
 #endif
 
         public void Init() {
+            fogMatShader = Shader.Find("VolumetricLights/VolumetricLightURP");
+            fogMatInvisibleShader = Shader.Find("VolumetricLights/Invisible");
+
             if (!volumetricLights.Contains(this)) {
                 volumetricLights.Add(this);
             }
@@ -100,7 +100,9 @@ namespace VolumetricLights {
         public void Refresh() {
             if (!enabled) return;
             CheckProfile();
-            DestroyMesh();
+
+            generatedRange = generatedTipRadius = generatedSpotAngle = generatedBaseRadius = -1;
+            generatedAreaWidth = generatedAreaHeight = generatedAreaFrustumAngle = generatedAreaFrustumMultiplier = 0;
             CheckMesh();
             CheckShadows();
             UpdateMaterialPropertiesNow();
@@ -135,10 +137,6 @@ namespace VolumetricLights {
                 DestroyImmediate(fogMatInvisible);
                 fogMatInvisible = null;
             }
-            if (fogMatLight != null) {
-                DestroyImmediate(fogMatLight);
-                fogMatLight = null;
-            }
             if (meshRenderer != null) {
                 meshRenderer.enabled = false;
             }
@@ -149,7 +147,7 @@ namespace VolumetricLights {
 
             bool isActiveAndEnabled = lightComp.isActiveAndEnabled || alwaysOn;
             if (isActiveAndEnabled) {
-                if (meshRenderer != null && !meshRenderer.enabled) {
+                if (!autoToggle && meshRenderer != null && !meshRenderer.enabled) {
                     requireUpdateMaterial = true;
                 }
             } else {
@@ -187,13 +185,14 @@ namespace VolumetricLights {
             if (autoToggle) {
                 float maxDistSqr = distanceDeactivation * distanceDeactivation;
                 float minDistSqr = distanceStartDimming * distanceStartDimming;
-                if (minDistSqr > maxDistSqr) minDistSqr = maxDistSqr;
+                if (minDistSqr > maxDistSqr) minDistSqr = maxDistSqr - 0.00001f;
                 float dim = 1f - Mathf.Clamp01((distanceToCameraSqr - minDistSqr) / (maxDistSqr - minDistSqr));
                 brightness *= dim;
-                bool isInRange = dim > 0.0f;
+                Tribool isInRange = dim > 0.0f ? Tribool.True : Tribool.False;
                 if (isInRange != wasInRange) {
                     wasInRange = isInRange;
-                    meshRenderer.enabled = isInRange;
+                    if (isInRange == Tribool.True && !meshRenderer.enabled) requireUpdateMaterial = true;
+                    meshRenderer.enabled = isInRange == Tribool.True;
                 }
             }
 
@@ -239,22 +238,32 @@ namespace VolumetricLights {
 
 
         public void UpdateVolumeGeometry() {
+            NormalizeScale();
             UpdateVolumeGeometryMaterial(fogMat);
             if (enableDustParticles && particleMaterial != null) {
                 UpdateVolumeGeometryMaterial(particleMaterial);
                 particleMaterial.SetMatrix(ShaderParams.WorldToLocalMatrix, transform.worldToLocalMatrix);
             }
-            NormalizeScale();
         }
 
         void UpdateVolumeGeometryMaterial(Material mat) {
             if (mat == null) return;
 
-            Vector4 tipData = transform.position;
+            Transform t = transform;
+
+            Vector3 pos = t.position;
+            Vector4 tipData;
+            tipData.x = pos.x;
+            tipData.y = pos.y;
+            tipData.z = pos.z;
             tipData.w = tipRadius;
             mat.SetVector(ShaderParams.ConeTipData, tipData);
 
-            Vector4 coneAxis = transform.forward * generatedRange;
+            Vector3 forward = t.forward;
+            Vector4 coneAxis;
+            coneAxis.x = forward.x * generatedRange;
+            coneAxis.y = forward.y * generatedRange;
+            coneAxis.z = forward.z * generatedRange;
             float maxDistSqr = generatedRange * generatedRange;
             coneAxis.w = maxDistSqr;
             mat.SetVector(ShaderParams.ConeAxis, coneAxis);
@@ -267,14 +276,25 @@ namespace VolumetricLights {
             if (!useCustomBounds) {
                 bounds = meshRenderer.bounds;
             }
-            mat.SetVector(ShaderParams.BoundsCenter, bounds.center);
-            mat.SetVector(ShaderParams.BoundsExtents, bounds.extents);
-            if (generatedType == LightType.Area) {
+
+            Bounds adjustedBounds = bounds;
+            if (useCustomBounds && boundsInLocalSpace) {
+                adjustedBounds.center += pos;
+            }
+            mat.SetVector(ShaderParams.BoundsCenter, adjustedBounds.center);
+            mat.SetVector(ShaderParams.BoundsExtents, adjustedBounds.extents);
+            if (generatedType == LightType.Area || generatedType == LightType.Disc) {
+                if (mf != null && mf.sharedMesh != null) {
+                    Bounds meshBounds = mf.sharedMesh.bounds; // non transformed real bounds
+                    mat.SetVector(ShaderParams.MeshBoundsCenter, meshBounds.center);
+                    mat.SetVector(ShaderParams.MeshBoundsExtents, meshBounds.extents);
+                }
                 float baseMultiplierComputed = (generatedAreaFrustumMultiplier - 1f) / generatedRange;
-                mat.SetVector(ShaderParams.AreaExtents, new Vector4(areaWidth * 0.5f, areaHeight * 0.5f, generatedRange, baseMultiplierComputed));
-            } else if (generatedType == LightType.Disc) {
-                float baseMultiplierComputed = (generatedAreaFrustumMultiplier - 1f) / generatedRange;
-                mat.SetVector(ShaderParams.AreaExtents, new Vector4(areaWidth * areaWidth, areaHeight, generatedRange, baseMultiplierComputed));
+                if (generatedType == LightType.Area) {
+                    mat.SetVector(ShaderParams.AreaExtents, new Vector4(areaWidth * 0.5f, areaHeight * 0.5f, generatedRange, baseMultiplierComputed));
+                } else {
+                    mat.SetVector(ShaderParams.AreaExtents, new Vector4(areaWidth * areaWidth, areaHeight, generatedRange, baseMultiplierComputed));
+                }
             }
         }
 
@@ -285,7 +305,7 @@ namespace VolumetricLights {
 
         void UpdateMaterialPropertiesNow() {
 
-            wasInRange = false;
+            wasInRange = Tribool.Unknown;
             lastDistanceCheckTime = -999;
 
             mainCamera = null;
@@ -303,8 +323,28 @@ namespace VolumetricLights {
             }
 
             if (fogMatLight == null) {
-                fogMatLight = new Material(Shader.Find("VolumetricLights/VolumetricLightURP"));
-                fogMatLight.hideFlags = HideFlags.DontSave;
+                if (meshRenderer != null) {
+                    fogMatLight = meshRenderer.sharedMaterial;
+                    if (fogMatLight != null) {
+                        // ensure this is the correct shader
+                        if (fogMatLight.shader != fogMatShader && fogMatLight.shader != fogMatInvisibleShader) {
+                            fogMatLight = null;
+                        }
+                        if (fogMatLight != null) {
+                            // ensure this material is not used by other lights (can happen if user duplicates another light gameobject in scene)
+                            foreach (VolumetricLight light in volumetricLights) {
+                                if (light != null && light != this && light.meshRenderer != null && light.meshRenderer.sharedMaterial == fogMatLight) {
+                                    fogMatLight = null;
+                                    if (mf != null) mf.sharedMesh = null;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (fogMatLight == null) {
+                    fogMatLight = new Material(fogMatShader);
+                }
             }
             fogMat = fogMatLight;
 
@@ -350,6 +390,7 @@ namespace VolumetricLights {
             fogMat.SetFloat(ShaderParams.Penumbra, penumbra);
             fogMat.SetFloat(ShaderParams.RangeFallOff, rangeFallOff);
             fogMat.SetFloat(ShaderParams.Density, density);
+            fogMat.SetFloat(ShaderParams.NearClipDistance, nearClipDistance);
             fogMat.SetVector(ShaderParams.DirectLightData, new Vector4(directLightMultiplier, directLightSmoothSamples, directLightSmoothRadius, 0));
             fogMat.SetVector(ShaderParams.FallOff, new Vector4(attenCoefConstant, attenCoefLinear, attenCoefQuadratic, 0));
             fogMat.SetVector(ShaderParams.RayMarchSettings, new Vector4(raymarchQuality, dithering * 0.001f, jittering, raymarchMinStep));
@@ -423,7 +464,7 @@ namespace VolumetricLights {
             if (meshRenderer != null) {
                 if (density <= 0 || mediumAlbedo.a == 0) {
                     if (fogMatInvisible == null) {
-                        fogMatInvisible = new Material(Shader.Find("VolumetricLights/Invisible"));
+                        fogMatInvisible = new Material(fogMatInvisibleShader);
                         fogMatInvisible.hideFlags = HideFlags.DontSave;
                     }
                     meshRenderer.sharedMaterial = fogMatInvisible;
@@ -444,6 +485,29 @@ namespace VolumetricLights {
                     profile.ApplyTo(this);
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets bounds in world space
+        /// </summary>
+        public Bounds GetBounds() {
+            Bounds bounds = this.bounds;
+            if (useCustomBounds && boundsInLocalSpace) {
+                bounds.center += transform.position;
+            }
+            return bounds;
+        }
+
+
+        /// <summary>
+        /// Sets bounds in world space
+        /// </summary>
+        public void SetBounds(Bounds bounds) {
+            if (useCustomBounds && boundsInLocalSpace) {
+                bounds.center -= transform.position;
+            }
+            this.bounds = bounds;
+            UpdateVolumeGeometry();
         }
     }
 }

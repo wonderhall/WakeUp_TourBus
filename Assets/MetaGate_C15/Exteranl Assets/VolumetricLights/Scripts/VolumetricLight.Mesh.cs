@@ -14,19 +14,13 @@ namespace VolumetricLights {
         const int SIDES = 32;
         readonly List<Vector3> vertices = new List<Vector3>(32);
         readonly List<int> indices = new List<int>(32);
-        float generatedRange = -1;
-        float generatedTipRadius = -1;
-        float generatedSpotAngle = -1;
-        float generatedBaseRadius;
-        float generatedAreaWidth, generatedAreaHeight, generatedAreaFrustumAngle, generatedAreaFrustumMultiplier;
-        LightType generatedType;
 
-        void DestroyMesh() {
-            mf = GetComponent<MeshFilter>();
-            if (mf != null && mf.sharedMesh != null) {
-                DestroyImmediate(mf.sharedMesh);
-            }
-        }
+        public float generatedRange = -1;
+        public float generatedTipRadius = -1;
+        public float generatedSpotAngle = -1;
+        public float generatedBaseRadius;
+        public float generatedAreaWidth, generatedAreaHeight, generatedAreaFrustumAngle, generatedAreaFrustumMultiplier;
+        public LightType generatedType;
 
         bool CheckMesh() {
 
@@ -44,7 +38,9 @@ namespace VolumetricLights {
             }
 
             bool needMesh = false;
-            MeshFilter mf = GetComponent<MeshFilter>();
+            if (mf == null) {
+                mf = GetComponent<MeshFilter>();
+            }
             if (mf == null || mf.sharedMesh == null) {
                 needMesh = true;
             }
@@ -88,6 +84,7 @@ namespace VolumetricLights {
             if (mf == null) {
                 mf = gameObject.AddComponent<MeshFilter>();
             }
+
             Mesh mesh = mf.sharedMesh;
             if (mesh == null) {
                 mesh = new Mesh();
@@ -124,7 +121,7 @@ namespace VolumetricLights {
         }
 
 
-        #region Cone mesh generation
+#region Cone mesh generation
 
         void GenerateConeMesh() {
 
@@ -196,9 +193,9 @@ namespace VolumetricLights {
             UpdateMesh("Capped Cone");
         }
 
-        #endregion
+#endregion
 
-        #region Cube mesh generation
+#region Cube mesh generation
 
         static readonly Vector3[] faceVerticesForward = {
             new Vector3 (0.5f, -0.5f, 1f),
@@ -283,9 +280,9 @@ namespace VolumetricLights {
             indices.Add(index);
         }
 
-        #endregion
+#endregion
 
-        #region Sphere mesh generation
+#region Sphere mesh generation
 
         void GenerateSphereMesh() {
 
@@ -353,9 +350,9 @@ namespace VolumetricLights {
 
         }
 
-        #endregion
+#endregion
 
-        #region Cylinder mesh generation
+#region Cylinder mesh generation
 
         void GenerateCylinderMesh() {
 
@@ -427,7 +424,7 @@ namespace VolumetricLights {
             UpdateMesh("Cylinder");
         }
 
-        #endregion
+#endregion
 
     }
 

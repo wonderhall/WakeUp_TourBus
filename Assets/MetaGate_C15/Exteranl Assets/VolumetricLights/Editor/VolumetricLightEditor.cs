@@ -4,8 +4,6 @@ using UnityEditor.IMGUI.Controls;
 using System.IO;
 using UnityEditor.SceneManagement;
 using UnityEngine.Rendering;
-using UnityEditor.Experimental.SceneManagement;
-
 namespace VolumetricLights {
 
     [CustomEditor(typeof(VolumetricLight))]
@@ -18,12 +16,12 @@ namespace VolumetricLights {
         SerializedProperty autoToggle, distanceStartDimming, distanceDeactivation, autoToggleCheckInterval;
         SerializedProperty useNoise, noiseTexture, noiseStrength, noiseScale, noiseFinalMultiplier, density, mediumAlbedo, brightness;
         SerializedProperty attenuationMode, attenCoefConstant, attenCoefLinear, attenCoefQuadratic, rangeFallOff, diffusionIntensity, penumbra;
-        SerializedProperty tipRadius, cookieTexture, cookieScale, cookieOffset, cookieSpeed, frustumAngle, windDirection;
-        SerializedProperty enableDustParticles, dustBrightness, dustMinSize, dustMaxSize, dustDistanceAttenuation, dustWindSpeed, dustAutoToggle, dustDistanceDeactivation;
-        SerializedProperty enableShadows, shadowIntensity, shadowTranslucency, shadowTranslucencyIntensity, shadowTranslucencyBlend, shadowResolution, shadowCullingMask, shadowBakeInterval, shadowNearDistance, shadowAutoToggle, shadowDistanceDeactivation;
-		SerializedProperty shadowBakeMode, shadowOrientation, shadowDirection;
+        SerializedProperty tipRadius, nearClipDistance, cookieTexture, cookieScale, cookieOffset, cookieSpeed, frustumAngle, windDirection;
+        SerializedProperty enableDustParticles, dustBrightness, dustMinSize, dustMaxSize, dustDistanceAttenuation, dustWindSpeed, dustAutoToggle, dustDistanceDeactivation, dustPrewarm;
+        SerializedProperty enableShadows, shadowIntensity, shadowColor, shadowTranslucency, shadowTranslucencyIntensity, shadowTranslucencyBlend, shadowResolution, shadowCullingMask, shadowBakeInterval, shadowNearDistance, shadowAutoToggle, shadowDistanceDeactivation;
+        SerializedProperty shadowBakeMode, shadowOrientation, shadowDirection;
 
-        SerializedProperty useCustomBounds, bounds;
+        SerializedProperty useCustomBounds, bounds, boundsInLocalSpace;
         SerializedProperty areaWidth, areaHeight;
         SerializedProperty customRange, useCustomSize;
         SerializedProperty targetCamera;
@@ -79,6 +77,7 @@ namespace VolumetricLights {
             diffusionIntensity = serializedObject.FindProperty("diffusionIntensity");
             penumbra = serializedObject.FindProperty("penumbra");
             tipRadius = serializedObject.FindProperty("tipRadius");
+            nearClipDistance = serializedObject.FindProperty("nearClipDistance");
             cookieTexture = serializedObject.FindProperty("cookieTexture");
             cookieScale = serializedObject.FindProperty("cookieScale");
             cookieOffset = serializedObject.FindProperty("cookieOffset");
@@ -93,8 +92,10 @@ namespace VolumetricLights {
             dustDistanceAttenuation = serializedObject.FindProperty("dustDistanceAttenuation");
             dustAutoToggle = serializedObject.FindProperty("dustAutoToggle");
             dustDistanceDeactivation = serializedObject.FindProperty("dustDistanceDeactivation");
+            dustPrewarm = serializedObject.FindProperty("dustPrewarm");
             enableShadows = serializedObject.FindProperty("enableShadows");
             shadowIntensity = serializedObject.FindProperty("shadowIntensity");
+            shadowColor = serializedObject.FindProperty("shadowColor");
             shadowTranslucency = serializedObject.FindProperty("shadowTranslucency");
             shadowTranslucencyIntensity = serializedObject.FindProperty("shadowTranslucencyIntensity");
             shadowTranslucencyBlend = serializedObject.FindProperty("shadowTranslucencyBlend");
@@ -114,6 +115,7 @@ namespace VolumetricLights {
 
             useCustomBounds = serializedObject.FindProperty("useCustomBounds");
             bounds = serializedObject.FindProperty("bounds");
+            boundsInLocalSpace = serializedObject.FindProperty("boundsInLocalSpace");
             useCustomSize = serializedObject.FindProperty("useCustomSize");
             areaWidth = serializedObject.FindProperty("areaWidth");
             areaHeight = serializedObject.FindProperty("areaHeight");
@@ -125,7 +127,7 @@ namespace VolumetricLights {
         public override void OnInspectorGUI() {
 
             if (vl.lightComp != null && vl.lightComp.type == LightType.Directional) {
-                EditorGUILayout.HelpBox("Volumetric Lights works with Point, Spot and Area lights only.\nYou can place a volumetric area light in the desired area instead or use Volumetric Fog & Mist asset for other fog related effects.", MessageType.Info);
+                EditorGUILayout.HelpBox("Volumetric Lights works with Point, Spot and Area lights only.\nPress the button below to place a volumetric area light in the scene synced with the directional light orientation and color.\nAlternatively you can use Volumetric Fog & Mist which has native support for directional light.", MessageType.Info);
                 if (GUILayout.Button("Create a Volumetric Area Light")) {
                     CreateVolumetricAreaLight(vl.lightComp);
                 }
@@ -156,8 +158,18 @@ namespace VolumetricLights {
                 EditorGUILayout.Separator();
             }
 
+
+            EditorGUILayout.BeginVertical(GUI.skin.box);
+
+            if (raymarchPreset.intValue >= 30 && !VolumetricLightsRenderFeature.installed) {
+                EditorGUILayout.HelpBox("Consider adding the Volumetric Lights Render Feature to URP assets to improve performance or reduce noise appearance. Click 'Global Settings' button to add it.", MessageType.Info);
+            }
+
+
+            EditorGUILayout.BeginHorizontal();
+
             if (pipe != null) {
-                if (GUILayout.Button("Show Global Settings")) {
+                if (GUILayout.Button("Global Settings")) {
                     if (VolumetricLightsRenderFeature.installed) {
                         var so = new SerializedObject(pipe);
                         var prop = so.FindProperty("m_RendererDataList");
@@ -170,12 +182,22 @@ namespace VolumetricLights {
                         }
 
                     } else {
-                        if (EditorUtility.DisplayDialog("Show Global Settings", "The global settings can be found in the Volumetric Lights Render Feature which can't be found in the URP default renderer asset. Click Ok to select the current URP asset so you can add the render feature now.", "Ok", "Cancel")) {
+                        if (EditorUtility.DisplayDialog("Volumetric Lights Global Settings", "The global settings can be found in the Volumetric Lights Render Feature which can't be found in the URP default renderer asset. Click Ok to select the current URP asset so you can add the render feature now.", "Ok", "Cancel")) {
                             Selection.activeObject = pipe;
                         }
                     }
                 }
             }
+            if (GUILayout.Button("Help & Tips")) {
+                Application.OpenURL("https://kronnect.com/guides/volumetric-lights-2-urp-performance-tips/");
+            }
+            if (GUILayout.Button("Contact Us", EditorStyles.miniButton)) {
+                Application.OpenURL("https://kronnect.com");
+            }
+
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.EndVertical();
 
 
             if (boxStyle == null) {
@@ -305,6 +327,7 @@ namespace VolumetricLights {
             switch (vl.lightComp.type) {
                 case LightType.Spot:
                     EditorGUILayout.PropertyField(tipRadius);
+                    EditorGUILayout.PropertyField(nearClipDistance);
                     EditorGUILayout.PropertyField(cookieTexture, new GUIContent("Cookie Texture (RGB)", "Assign any colored or grayscale texture. RGB values drive the color tint."));
                     if (cookieTexture.objectReferenceValue != null) {
                         EditorGUI.indentLevel++;
@@ -328,15 +351,18 @@ namespace VolumetricLights {
             if (enableShadows.boolValue) {
                 EditorGUI.indentLevel++;
                 EditorGUILayout.PropertyField(shadowIntensity, new GUIContent("Intensity"));
+                EditorGUILayout.PropertyField(shadowColor, new GUIContent("Color"));
 #if UNITY_2021_3_OR_NEWER
                 EditorGUILayout.PropertyField(shadowTranslucency, new GUIContent("Translucency"));
-                if (shadowTranslucency.boolValue && vl.lightComp.type != LightType.Spot && vl.lightComp.type != LightType.Rectangle && vl.lightComp.type != LightType.Disc) {
-                    EditorGUILayout.HelpBox("Translucenct shadow maps are not supported for this light type.", MessageType.Info);
-                } else {
-                    EditorGUI.indentLevel++;
-                    EditorGUILayout.PropertyField(shadowTranslucencyIntensity, new GUIContent("Intensity"));
-                    EditorGUILayout.PropertyField(shadowTranslucencyBlend, new GUIContent("Blending"));
-                    EditorGUI.indentLevel--;
+                if (shadowTranslucency.boolValue) {
+                    if (vl.lightComp.type != LightType.Spot && vl.lightComp.type != LightType.Rectangle && vl.lightComp.type != LightType.Disc) {
+                        EditorGUILayout.HelpBox("Translucent shadow maps are not supported for this light type.", MessageType.Info);
+                    } else {
+                        EditorGUI.indentLevel++;
+                        EditorGUILayout.PropertyField(shadowTranslucencyIntensity, new GUIContent("Intensity"));
+                        EditorGUILayout.PropertyField(shadowTranslucencyBlend, new GUIContent("Blending"));
+                        EditorGUI.indentLevel--;
+                    }
                 }
 #endif
                 EditorGUILayout.PropertyField(shadowResolution, new GUIContent("Resolution"));
@@ -375,6 +401,7 @@ namespace VolumetricLights {
                     EditorGUILayout.PropertyField(dustDistanceDeactivation, new GUIContent("Distance"));
                     EditorGUI.indentLevel--;
                 }
+                EditorGUILayout.PropertyField(dustPrewarm, new GUIContent("Prewarm"));
                 EditorGUI.indentLevel--;
             }
 
@@ -416,6 +443,18 @@ namespace VolumetricLights {
             if (useCustomBounds.boolValue) {
                 EditorGUI.indentLevel++;
                 EditorGUILayout.PropertyField(bounds);
+                EditorGUI.BeginChangeCheck();
+                EditorGUILayout.PropertyField(boundsInLocalSpace, new GUIContent("Local Space"));
+                if (EditorGUI.EndChangeCheck()) {
+                    Bounds b = bounds.boundsValue;
+                    if (boundsInLocalSpace.boolValue) {
+                        b.center = vl.meshRenderer.bounds.center - vl.transform.position;
+                    } else {
+                        b.center = vl.meshRenderer.bounds.center;
+
+                    }
+                    bounds.boundsValue = b;
+                }
                 EditorGUI.indentLevel--;
             }
 
@@ -480,8 +519,9 @@ namespace VolumetricLights {
             VolumetricLight vl = (VolumetricLight)target;
             if (!vl.useCustomBounds) return;
 
-            m_BoundsHandle.center = vl.bounds.center;
-            m_BoundsHandle.size = vl.bounds.size;
+            Bounds bounds = vl.GetBounds();
+            m_BoundsHandle.center = bounds.center;
+            m_BoundsHandle.size = bounds.size;
 
             // draw the handle
             EditorGUI.BeginChangeCheck();
@@ -494,28 +534,41 @@ namespace VolumetricLights {
                 Bounds newBounds = new Bounds();
                 newBounds.center = m_BoundsHandle.center;
                 newBounds.size = m_BoundsHandle.size;
-                vl.bounds = newBounds;
-                vl.UpdateVolumeGeometry();
+                vl.SetBounds(newBounds);
             }
         }
 
         void CreateVolumetricAreaLight(Light directionalLight) {
-            GameObject go = new GameObject("Volumetric Area Light (Directional Light)", typeof(Light), typeof(VolumetricLightDirectionalSync));
+            GameObject go = new GameObject("Volumetric Area Light (Directional Light)", typeof(Light));
             Camera sceneCamera = SceneView.lastActiveSceneView?.camera;
             if (sceneCamera != null) {
                 go.transform.position = sceneCamera.transform.TransformPoint(Vector3.forward * 50f);
             }
+            float range = 1000;
+            Camera cam = Camera.main;
+            if (cam != null) {
+                range = cam.farClipPlane;
+            }
             Light light = go.GetComponent<Light>();
-            light.type = LightType.Area;
+            light.type = LightType.Disc;
             light.areaSize = new Vector2(50, 20);
-            light.range = 20;
+            light.range = range;
             light.enabled = false;
             VolumetricLight vl = go.AddComponent<VolumetricLight>();
-            vl.density = 0.015f;
+            vl.raymarchMinStep = 1f;
+            vl.jittering = 1.5f;
+            vl.brightness = 0.5f;
+            vl.density = 0.1f;
             vl.useNoise = false;
+            vl.useBlueNoise = true;
+            vl.animatedBlueNoise = false;
             vl.alwaysOn = true;
+            vl.enableShadows = true;
+            vl.shadowResolution = ShadowResolution._1024;
+            vl.shadowIntensity = 1f;
             vl.Refresh();
-            VolumetricLightDirectionalSync dirSync = go.GetComponent<VolumetricLightDirectionalSync>();
+
+            VolumetricLightDirectionalSync dirSync = go.AddComponent<VolumetricLightDirectionalSync>();
             dirSync.directionalLight = directionalLight;
             VolumetricLight current = (VolumetricLight)target;
             DestroyImmediate(current);

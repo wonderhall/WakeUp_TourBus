@@ -14,13 +14,14 @@ CBUFFER_START(UnityPerMaterial)
 float4 _ConeTipData, _ConeAxis;
 half4 _ExtraGeoData;
 float3 _BoundsCenter, _BoundsExtents;
+float3 _MeshBoundsCenter, _MeshBoundsExtents;
 half4 _ToLightDir;
 
 float jitter;
 float _NoiseScale;
 half _NoiseStrength, _NoiseFinalMultiplier;
 
-half3 _FallOff;
+float3 _FallOff;
 half4 _Color;
 float4 _AreaExtents;
 
@@ -30,6 +31,7 @@ float4 _WindDirection;
 half4 _LightColor;
 half _Density;
 half _Border, _DistanceFallOff;
+float _NearClipDistance;
 half3 _DirectLightData;
 int _FlipDepthTexture;
 float _Downscaling;
@@ -56,9 +58,9 @@ sampler3D _NoiseTex;
 #endif
 
 // Common URP code
-#define VR_ENABLED defined(UNITY_STEREO_INSTANCING_ENABLED) || defined(UNITY_STEREO_MULTIVIEW_ENABLED) || defined(SINGLE_PASS_STEREO)
+//#define VR_ENABLED defined(UNITY_STEREO_INSTANCING_ENABLED) || defined(UNITY_STEREO_MULTIVIEW_ENABLED) || defined(SINGLE_PASS_STEREO)
 
-#if defined(USE_ALTERNATE_RECONSTRUCT_API) || VR_ENABLED 
+#if defined(USE_ALTERNATE_RECONSTRUCT_API) //|| VR_ENABLED 
    #define CLAMP_RAY_DEPTH(rayStart, uv, t1) ClampRayDepthAlt(rayStart, uv, t1)
 #else
    #define CLAMP_RAY_DEPTH(rayStart, uv, t1) ClampRayDepth(rayStart, uv, t1)

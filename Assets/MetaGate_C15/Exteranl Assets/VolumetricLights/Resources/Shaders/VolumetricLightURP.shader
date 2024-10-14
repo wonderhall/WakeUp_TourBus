@@ -14,12 +14,15 @@ Shader "VolumetricLights/VolumetricLightURP"
 		[HideInInspector] _WindDirection("Wind Direction", Vector) = (1, 0, 0)
 		[HideInInspector] _BoundsCenter("Bounds Center", Vector) = (0,0,0)
 		[HideInInspector] _BoundsExtents("Bounds Size", Vector) = (0,0,0)
+		[HideInInspector] _MeshBoundsCenter("Non transformed Bounds Center", Vector) = (0,0,0)
+		[HideInInspector] _MeshBoundsExtents("Non transformed Bounds Size", Vector) = (0,0,0)
 		[HideInInspector] _ConeBoundsCenter("Cone Bounds Center", Vector) = (0,0,0)
 		[HideInInspector] _ConeBoundsExtents("Cone Bounds Extents", Vector) = (1,1,1)
 		[HideInInspector] _ConeTipData("Cone Tip Data", Vector) = (0,0,0,0.1)
 		[HideInInspector] _ExtraGeoData("Extra Geometry Data", Vector) = (1.0, 0, 0)
         [HideInInspector] _Border("Border", Float) = 0.1
         [HideInInspector] _DistanceFallOff("Length Falloff", Float) = 0
+        [HideInInspector] _NearClipDistance("Near Clip Distance", Float) = 0
         [HideInInspector] _FallOff("FallOff Physical", Vector) = (1.0, 2.0, 1.0)
         [HideInInspector] _ConeAxis("Cone Axis", Vector) = (0,0,0,0.5)
         [HideInInspector] _AreaExtents("Area Extents", Vector) = (0,0,0,1)
@@ -28,11 +31,12 @@ Shader "VolumetricLights/VolumetricLightURP"
         [HideInInspector] _BlendSrc("Blend Src", Int) = 1
         [HideInInspector] _BlendDest("Blend Dest", Int) = 1
 		[HideInInspector] _BlendOp("Blend Op", Int) = 0
-        [HideInInspector] _ShadowIntensity("Shadow Intensity", Vector) = (0,1,0,0)
         [HideInInspector] _BlueNoise("Blue Noise", 2D) = "black" {}
 		[HideInInspector] _Cookie2D("Cookie (2D)", 2D) = "black" {}
 		[HideInInspector] _Cookie2D_SS("Cookie (Scale and Speed)", Vector) = (1,1,0,0)
 		[HideInInspector] _Cookie2D_Offset("Cookie (Offset)", Vector) = (0,0,0,0)
+        [HideInInspector] _ShadowIntensity("Shadow Intensity", Vector) = (0,1,0,0)
+        [HideInInspector] _ShadowColor("Shadow Color", Color) = (0,0,0,1)
 		[HideInInspector] _ShadowCubemap("Shadow Texture (Cubemap)", Any) = "" {}
 		[HideInInspector] _RayMarchMaxSteps("Raymarch Max Steps", Int) = 16
 		[HideInInspector] _FlipDepthTexture("Flip Depth Texture", Int) = 0
@@ -88,7 +92,7 @@ Shader "VolumetricLights/VolumetricLightURP"
 					UNITY_VERTEX_OUTPUT_STEREO
 				};
 
-				int _ForcedInvisible;
+				int _ForcedLightInvisible;
 
 				v2f vert(appdata v)
 				{
@@ -107,7 +111,7 @@ Shader "VolumetricLights/VolumetricLightURP"
 						o.pos.z = o.pos.w - 1.0e-6f;
 					#endif
 
-					if (_ForcedInvisible == 1) {
+					if (_ForcedLightInvisible == 1) {
 						o.pos.xy = -10000;
                     }
 
@@ -140,7 +144,8 @@ Shader "VolumetricLights/VolumetricLightURP"
                     if (t0>=t1) return 0;
 
 					SetJitter(uv);
-                    t0 += jitter * JITTERING;
+                    
+					t0 = clamp(t0 + jitter * JITTERING, t0,  t1 * 0.99);
 
                     #if VL_SHADOWS || VL_SPOT_COOKIE || VL_SHADOWS_TRANSLUCENCY
                         ComputeShadowTextureCoords(rayStart, rayDir, t0, t1);
@@ -156,9 +161,6 @@ Shader "VolumetricLights/VolumetricLightURP"
 
 				    // Apply dither
 					color = max(0, color - (half)(jitter * DITHERING));
-
-					// Final alpha
-					color *= _LightColor.a;
 
 					return color;
 				}

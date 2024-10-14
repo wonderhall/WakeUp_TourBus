@@ -33,6 +33,8 @@ namespace VolumetricLights {
 
         [NonSerialized]
         public RenderTexture translucentMap;
+        [NonSerialized]
+        public RTHandle translucencyMapHandle;
 
         bool usesCubemap { get { return shadowBakeMode != ShadowBakeMode.HalfSphere && generatedType == LightType.Point; } }
         bool usesTranslucency { get { return shadowTranslucency && (generatedType == LightType.Spot || generatedType == LightType.Rectangle || generatedType == LightType.Disc); } }
@@ -120,8 +122,7 @@ namespace VolumetricLights {
             }
 
             UniversalAdditionalCameraData camData = cam.GetComponent<UniversalAdditionalCameraData>();
-            if (camData == null)
-            {
+            if (camData == null) {
                 camData = cam.gameObject.AddComponent<UniversalAdditionalCameraData>();
             }
             if (camData != null) {
@@ -137,7 +138,7 @@ namespace VolumetricLights {
                 CheckAndAssignDepthRenderer(camData);
 #endif
             }
-			
+
             cam.nearClipPlane = shadowNearDistance;
             cam.orthographicSize = Mathf.Max(generatedAreaWidth, generatedAreaHeight);
 
@@ -197,6 +198,7 @@ namespace VolumetricLights {
             }
 
             fogMat.SetVector(ShaderParams.ShadowIntensity, new Vector4(shadowIntensity, 1f - shadowIntensity, 0, 0));
+            fogMat.SetVector(ShaderParams.ShadowColor, shadowColor);
 
             if ((shadowCullingMask & 2) != 0) {
                 shadowCullingMask &= ~2; // exclude transparent FX layer

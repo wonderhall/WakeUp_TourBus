@@ -8,10 +8,12 @@
 #define RANGE _ExtraGeoData.w
 
 float BoxIntersection(float3 origin, float3 viewDir) {
-    float3 ro     = origin - _BoundsCenter;
+    origin = mul(unity_WorldToObject, float4(origin, 1.0)).xyz;
+    viewDir = mul((float3x3)unity_WorldToObject, viewDir);
+    float3 ro     = origin - _MeshBoundsCenter;
     float3 invR   = 1.0.xxx / viewDir;
-    float3 tbot   = invR * (-_BoundsExtents - ro);
-    float3 ttop   = invR * (_BoundsExtents - ro);
+    float3 tbot   = invR * (-_MeshBoundsExtents - ro);
+    float3 ttop   = invR * (_MeshBoundsExtents - ro);
     float3 tmin   = min (ttop, tbot);
     float2 tt0    = max (tmin.xx, tmin.yz);
     float t = max(tt0.x, tt0.y);
@@ -109,23 +111,25 @@ float ConeAttenuation(float3 wpos) {
     t = saturate(t);
 
     float3 projection = t * _ConeAxis.xyz;
-    float distSqr = dot(p - projection, p - projection);
+    float distSqr = dot2(p - projection);
 
     float maxDist = lerp(CONE_TIP_RADIUS, CONE_BASE_RADIUS, t);
     float maxDistSqr = maxDist * maxDist;
     float cone = (maxDistSqr - distSqr ) / (maxDistSqr * _Border);
     cone = saturate(cone);
 
-    t = dot2(p) / RANGE_SQR; // ensure light doesn't extend beyound spherical range
+    float t0 = dot2(p) / RANGE_SQR; // ensure light doesn't extend beyound spherical range
 
 #if VL_PHYSICAL_ATTEN
-    float t1 = t * _DistanceFallOff;
-    float atten = (1.0 - t) / dot(_FallOff, float3(1.0, t1, t1*t1));
+    float t1 = t0 * _DistanceFallOff;
+    float atten = (1.0 - t0) / dot(_FallOff, float3(1.0, t1, t1*t1));
 #else
-    float atten = 1.0 - (t * _DistanceFallOff);
+    float atten = 1.0 - (t0 * _DistanceFallOff);
 #endif
 
-    cone *= atten;
+    atten *= step(_NearClipDistance, t);
+
+    cone *= saturate(atten);
     return cone;
 }
 
@@ -133,6 +137,7 @@ float ConeAttenuation(float3 wpos) {
 float SphereAttenuation(float3 wpos) {
     float3 v = wpos - LIGHT_POS;
     float distSqr = dot2(v);
+
 #if VL_PHYSICAL_ATTEN
     float t = distSqr / RANGE_SQR;
     float t1 = t * _DistanceFallOff;
@@ -158,10 +163,10 @@ float AreaRectAttenuation(float3 wpos) {
     float t = v.z / _AreaExtents.z;
     float t1 = t * _DistanceFallOff;
     float atten = (1.0 - t) / dot(_FallOff, float3(1.0, t1, t1*t1));
-    rect *= atten;
 #else
-    rect *= 1.0 - (v.z / _AreaExtents.z) * _DistanceFallOff;
+    float atten = 1.0 - (v.z / _AreaExtents.z) * _DistanceFallOff;
 #endif
+    rect *= saturate(atten);
     return rect;
 }
 
@@ -169,7 +174,7 @@ float AreaRectAttenuation(float3 wpos) {
 float AreaDiscAttenuation(float3 wpos) {
     float3 v = mul(unity_WorldToObject, float4(wpos, 1)).xyz;
     //v.z = max(v.z, 0); // abs(v);
-    float distSqr = dot(v.xy, v.xy);
+    float distSqr = dot2(v.xy);
 
     float maxDistSqr = _AreaExtents.x;
     float baseMultiplier = 1.0 + _AreaExtents.w * v.z;
@@ -181,11 +186,10 @@ float AreaDiscAttenuation(float3 wpos) {
     float t = v.z / _AreaExtents.z;
     float t1 = t * _DistanceFallOff;
     float atten = (1.0 - t) / dot(_FallOff, float3(1.0, t1, t1*t1));
-
-    disc *= atten;
 #else
-    disc *= 1.0 - (v.z / _AreaExtents.z) * _DistanceFallOff;
+    float atten = 1.0 - (v.z / _AreaExtents.z) * _DistanceFallOff;
 #endif
+    disc *= saturate(atten);
     return disc;
 }
 

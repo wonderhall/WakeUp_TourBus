@@ -23,6 +23,8 @@ namespace VolumetricLights {
             public static int AreaExtents = Shader.PropertyToID("_AreaExtents");
             public static int BoundsExtents = Shader.PropertyToID("_BoundsExtents");
             public static int BoundsCenter = Shader.PropertyToID("_BoundsCenter");
+            public static int MeshBoundsExtents = Shader.PropertyToID("_MeshBoundsExtents");
+            public static int MeshBoundsCenter = Shader.PropertyToID("_MeshBoundsCenter");
             public static int ExtraGeoData = Shader.PropertyToID("_ExtraGeoData");
             public static int ConeAxis = Shader.PropertyToID("_ConeAxis");
             public static int ConeTipData = Shader.PropertyToID("_ConeTipData");
@@ -39,10 +41,12 @@ namespace VolumetricLights {
             public static int ShadowTexture = Shader.PropertyToID("_ShadowTexture");
             public static int ShadowCubemap = Shader.PropertyToID("_ShadowCubemap");
             public static int ShadowIntensity = Shader.PropertyToID("_ShadowIntensity");
+            public static int ShadowColor = Shader.PropertyToID("_ShadowColor");
             public static int TranslucencyTexture = Shader.PropertyToID("_TranslucencyTexture");
             public static int ShadowMatrix = Shader.PropertyToID("_ShadowMatrix");
             public static int LightPos = Shader.PropertyToID("_LightPos");
             public static int InvVPMatrix = Shader.PropertyToID("_I_VP_Matrix");
+            public static int NearClipDistance = Shader.PropertyToID("_NearClipDistance");
 
             // shader keywords
             public const string SKW_NOISE = "VL_NOISE";

@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -41,7 +41,7 @@ public class ControllPP : MonoBehaviour
             float t = (Time.time - timeStamp) / duration;
             t = animCurve.Evaluate(t);
 
-            // 0¿¡¼­ 10±îÁö ¿¡´Ï¸ŞÀÌ¼Ç Ä¿ºê¸¦ µû¶ó º¯Çü
+            // 0ì—ì„œ 10ê¹Œì§€ ì—ë‹ˆë©”ì´ì…˜ ì»¤ë¸Œë¥¼ ë”°ë¼ ë³€í˜•
             FstExposurVal = Mathf.LerpUnclamped(0f,FinV, t);
             //c.postExposure.value = FstExposurVal;
            c.colorFilter.value = Color.Lerp(Color.white, Color.black, FstExposurVal);

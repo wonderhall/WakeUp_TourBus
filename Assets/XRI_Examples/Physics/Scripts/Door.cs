@@ -256,13 +256,12 @@ namespace UnityEngine.XR.Content.Interaction
         /// </summary>
         public UnityEvent onUnlock => m_OnUnlock;
 
-        bool ScReady = false;
 
         void Start()
         {
             for (int i = 0; i < UserInfo.UnlockRoom.Length; i++)
             {
-                Debug.Log($"{i}번 잠김상태는 {UserInfo.UnlockRoom[i]}이다");
+                //Debug.Log($"{i}번 잠김상태는 {UserInfo.UnlockRoom[i]}이다");
             }
             m_OpenDoorLimits = m_DoorJoint.limits;
             m_ClosedDoorLimits = m_OpenDoorLimits;
@@ -337,7 +336,25 @@ namespace UnityEngine.XR.Content.Interaction
                 //colliderForUserCheck.enabled = true;//방이동을 위해 유저와 충돌할 컬리전 킴.
                 OpenLightVolume.SetActive(true);//문 뒤편 화이트
                 FocusEffect.SetActive(false);
-                doorUnLockCheck.SetRoomUnLock();
+
+                int unlockNum = 0;
+                for (global::System.Int32 i = 0; i < UserInfo.UnlockRoom.Length; i++)
+                {
+                    if (UserInfo.UnlockRoom[i] ==true) unlockNum+=1;
+                    Debug.Log($"유저정보에 열려있는 룸갯수는 {unlockNum}이다");
+                }
+                int curentRoomUnlockNum = 0;
+                for (global::System.Int32 i = 0; i < doorUnLockCheck.RoomUnLock.Length; i++)
+                {
+                    if (doorUnLockCheck.RoomUnLock[i] == true) curentRoomUnlockNum += 1;
+                    Debug.Log($"이 문에서 개발될 문 갯수는 {unlockNum}이다");
+
+                }
+                if (curentRoomUnlockNum > unlockNum)
+                {
+                    Debug.Log($"문 {curentRoomUnlockNum}를 개방한다");
+                    doorUnLockCheck.SetRoomUnLock();
+                }
                 Debug.Log("밀기시작");
             }
         }

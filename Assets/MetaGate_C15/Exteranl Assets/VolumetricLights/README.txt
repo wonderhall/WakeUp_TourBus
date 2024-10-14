@@ -23,9 +23,10 @@ Please read the documentation folder for additional instructions and options.
 
 Support
 -------
-* Website-Support Forum: https://kronnect.com
+* Support-Web: https://kronnect.com/support
+* Support-Discord: https://discord.gg/EH2GMaM
+* Email: contact@kronnect.com
 * Twitter: @Kronnect
-* Email (non support): contact@kronnect.com
 
 
 Future updates
@@ -39,7 +40,44 @@ Of course, all updates of Volumetric Lights will be eventually available on the 
 Version history
 ---------------
 
-Current version
+v10.1.1
+- Added DOTs instancing support to depth prepass shaders
+- Added helpful links and tips to the inspector
+
+v10.0.2
+- Performance optimizations for disabled lights
+
+v10.0
+- Added support for Render Graph (Unity 2023.3)
+
+v7.1.1
+- [Fix] Fixed VR issue using OpenXR
+
+v7.1
+- Small improvements to light diffusion effect
+
+v7.0
+- Added "Shadow Color" option. Shadow color can now be customized (also alpha) to create many special effects with Blend Mode.
+
+v6.9
+- Added Near Clip Distance to spotlights
+
+v6.8.2
+- [Fix] Fixed material issue when a light is duplicated in Unity Editor
+
+- Added "Dust Prewarm" option. By default, dust particles are prewarmed/populated during activation. This behaviour can be disabled to gain performance when activating many lights at the same time.
+
+v6.7
+- Improved rendering of large area lights
+
+v6.6.1
+- Optimized mesh data reuse / generation based on settings change
+
+v6.6
+- Added "Local Space" option to "Use Custom Bounds"
+- Improved generation of volumetric light area on directional lights
+
+v6.5.2
 - Option to ignore reflection probes in the depth pre-pass render feature
 - The volumetric lights render feature now excludes reflection probes based on its culling mask
 - [Fix] Fixed issue with translucency rendering in newly created lights that required additional initialization

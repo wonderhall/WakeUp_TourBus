@@ -3,7 +3,7 @@
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-#ifndef SHADER_API_PS4
+#if !defined(SHADER_API_PS5) && !defined(SHADER_API_PS4)
 CBUFFER_START(UnityPerMaterial)
 #endif
 
@@ -18,6 +18,7 @@ half _DistortionBlend;
 float4 _ConeTipData, _ConeAxis;
 float4 _ExtraGeoData;
 float3 _BoundsCenter, _BoundsExtents;
+float3 _MeshBoundsCenter, _MeshBoundsExtents;
 float _Border, _DistanceFallOff;
 float3 _FallOff;
 
@@ -25,8 +26,9 @@ half4 _Color;
 float4 _AreaExtents;
 half4 _ParticleLightColor;
 float _ParticleDistanceAtten;
+float _NearClipDistance;
 
-#ifndef SHADER_API_PS4
+#if !defined(SHADER_API_PS5) && !defined(SHADER_API_PS4)
 CBUFFER_END
 #endif
 
@@ -55,7 +57,7 @@ struct VaryingsParticle
         UNITY_VERTEX_OUTPUT_STEREO
 };
 
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Particles.hlsl"
+#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Particles.hlsl"
 
 #define SOFT_PARTICLE_NEAR_FADE _SoftParticleFadeParams.x
 #define SOFT_PARTICLE_INV_FADE_DISTANCE _SoftParticleFadeParams.y
