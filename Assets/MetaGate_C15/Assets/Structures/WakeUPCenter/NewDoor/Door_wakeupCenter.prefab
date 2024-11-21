@@ -7671,12 +7671,22 @@ MonoBehaviour:
   bounds:
     m_Center: {x: 0.82343453, y: 0.9606093, z: 10.569359}
     m_Extent: {x: 0.8372158, y: 2.04546, z: 2.546473}
+  boundsInLocalSpace: 0
   profile: {fileID: 0}
   customRange: 5.092946
   targetCamera: {fileID: 0}
   useCustomSize: 0
   areaWidth: 0.934085
   areaHeight: 2.2821279
+  generatedRange: -1
+  generatedTipRadius: -1
+  generatedSpotAngle: -1
+  generatedBaseRadius: 0
+  generatedAreaWidth: 0
+  generatedAreaHeight: 0
+  generatedAreaFrustumAngle: 0
+  generatedAreaFrustumMultiplier: 0
+  generatedType: 0
   blendMode: 0
   raymarchPreset: 20
   raymarchQuality: 4
@@ -7716,6 +7726,7 @@ MonoBehaviour:
   diffusionIntensity: 7.31
   penumbra: 1
   tipRadius: 0.1
+  nearClipDistance: 0
   cookieTexture: {fileID: 0}
   cookieScale: {x: 1, y: 1}
   cookieOffset: {x: 0, y: 0}
@@ -7730,8 +7741,10 @@ MonoBehaviour:
   dustDistanceAttenuation: 10
   dustAutoToggle: 0
   dustDistanceDeactivation: 70
+  dustPrewarm: 1
   enableShadows: 0
   shadowIntensity: 0.7
+  shadowColor: {r: 0, g: 0, b: 0, a: 1}
   shadowTranslucency: 0
   shadowTranslucencyIntensity: 1
   shadowTranslucencyBlend: 0.5
@@ -8126,7 +8139,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3363847208642255424, guid: 8bc98a33fd5738e4eab5d71e9f784623, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 119
       objectReference: {fileID: 0}
     - target: {fileID: 3364141248092149696, guid: 8bc98a33fd5738e4eab5d71e9f784623, type: 3}
       propertyPath: m_Name
@@ -8142,7 +8155,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3364141248092149696, guid: 8bc98a33fd5738e4eab5d71e9f784623, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 119
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8bc98a33fd5738e4eab5d71e9f784623, type: 3}
