@@ -1075,6 +1075,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6794635453899903969, guid: 6aa28eb51bb2f824f94075e4cde9d90f, type: 3}
+      propertyPath: m_InvalidColorGradient.key0.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8025908524528484732, guid: 6aa28eb51bb2f824f94075e4cde9d90f, type: 3}
       propertyPath: m_Enabled
       value: 1

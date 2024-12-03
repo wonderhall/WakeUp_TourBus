@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Photon.Pun;
 
 public class MyDog : MonoBehaviour
 {
@@ -58,12 +59,19 @@ public class MyDog : MonoBehaviour
         isAction = true;
         ResetAction();
 
+
+        //if(!PhotonNetwork.IsMasterClient)return;//이하는 마스터 클라이언트에서만 실행
+        //Debug.Log("포톤 마스터 클라이언트");
+
     }
 
 
     // Update is called once per frame
     void Update()
     {
+        if (!PhotonNetwork.IsMasterClient) return;//이하는 마스터 클라이언트에서만 실행
+        Debug.Log("포톤 마스터 클라이언트");
+
         if (!IsCall)//부르지 않을때만 랜덤 행동 개시
             ElapsedTime();
 
@@ -252,8 +260,8 @@ public class MyDog : MonoBehaviour
 
     void Whistle()
     {
-        // 이벤트가 발생하면 발소리 사운드 재생
-        AudioSource.PlayClipAtPoint(whistle, player.transform.position, 10);
+        //// 이벤트가 발생하면 발소리 사운드 재생
+        //AudioSource.PlayClipAtPoint(whistle, player.transform.position, 10);
         
     }
     void ActionDone(string TrueFalse)
@@ -345,8 +353,9 @@ public class MyDog : MonoBehaviour
 
     public void CallDog()
     {
-        Whistle();
         IsCall = true;
+        Debug.Log("개를 불렀어요");
+        Whistle();
     }
 
     IEnumerator enumerator = null;

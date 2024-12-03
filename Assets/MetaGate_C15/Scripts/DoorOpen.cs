@@ -210,4 +210,10 @@ public class DoorOpen : MonoBehaviourPunCallbacks
         //    playerInfo = collider.transform.parent.parent.GetComponent<PlayerInfo>();
         //}
     }
+    public void SceneChange(string sceneName)
+    {
+        SceneName = sceneName;
+        StartCoroutine(loadSc(SceneName));
+        //StartCoroutine(ScreenFade(0, 1));
+    }
 }
